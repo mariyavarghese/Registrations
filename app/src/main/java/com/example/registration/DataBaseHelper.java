@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 public class DataBaseHelper extends SQLiteOpenHelper {
     public static final String databaseName = "SignLog.db";
 
@@ -46,6 +48,49 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             return true;
         }
     }
+
+
+    public ArrayList<UserModel> displayProfile(String name1){
+
+        ArrayList<UserModel> ls = new ArrayList<>();
+        SQLiteDatabase MyDatabase = this.getReadableDatabase();
+        String query = "SELECT * FROM users  WHERE name='" +name1+"'";
+        Cursor cursor= MyDatabase.rawQuery(query,null);
+        if(cursor.moveToFirst()){
+            String name = cursor.getString(0);
+            String gender = cursor.getString(1);
+            String status = cursor.getString(2);
+            String guard = cursor.getString(3);
+            String blood = cursor.getString(4);
+            String age = cursor.getString(5);
+            String address = cursor.getString(6);
+            String category = cursor.getString(7);
+            String date = cursor.getString(8);
+
+            UserModel userModel=new UserModel();
+            userModel.setName(name);
+            userModel.setGender(gender);
+            userModel.setStatus(status);
+            userModel.setGuard(guard);
+            userModel.setBlood(blood);
+            userModel.setAge(age);
+            userModel.setAddress(address);
+            userModel.setCategory(category);
+            userModel.setDate(date);
+
+
+            ls.add(userModel);
+
+        }
+
+        return ls;
+
+    }
+
+
+
+
+
     public Boolean checkName(String name){
         SQLiteDatabase MyDatabase = this.getWritableDatabase();
         Cursor cursor = MyDatabase.rawQuery("Select * from users where name = ?", new String[]{name});
