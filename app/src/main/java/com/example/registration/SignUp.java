@@ -6,11 +6,9 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.registration.databinding.ActivitySignUpBinding;
@@ -22,10 +20,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
     ActivitySignUpBinding binding;
     DataBaseHelper databaseHelper;
     int year,month,day;
-    String[] items =  {"A-positive (A+)","A-negative (A-)","B-positive (B+)","B-negative (B-)","AB-positive (AB+)","AB-negative (AB-)","O-positive (O+)","O-negative (O-)"};
-    String[] itemscat =  {"General","SC","ST","OBC","Others"};
-    AutoCompleteTextView blood,category;
-    ArrayAdapter<String> adapterItems;
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
                     "(?=.*[@#$%^&+=])" +     // at least 1 special character
@@ -39,30 +33,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         setContentView(binding.getRoot());
         databaseHelper = new DataBaseHelper(this);
 
-        blood = findViewById(R.id.blood);
-        category = findViewById(R.id.category);
 
-
-        adapterItems = new ArrayAdapter<String>(this,R.layout.list_item,items);
-        blood.setAdapter(adapterItems);
-        blood.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String blood = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(),"Item: "+blood,Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        adapterItems = new ArrayAdapter<String>(this,R.layout.list_item,itemscat);
-        category.setAdapter(adapterItems);
-
-        category.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String category = parent.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(),"Item: "+category,Toast.LENGTH_SHORT).show();
-            }
-        });
 
 
      binding.date.setOnClickListener(this);
@@ -71,7 +42,6 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         binding.signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String name = binding.name.getText().toString();
                 RadioButton checked = findViewById(binding.radioGroup.getCheckedRadioButtonId());
                 String gender = checked.getText().toString();
@@ -79,7 +49,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                 String status = checkstatus.getText().toString();
                 String guard = binding.guard.getText().toString();
                 String blood = binding.blood.getText().toString();
-                int age = Integer.parseInt(binding.age.getText().toString());
+                String age = binding.age.getText().toString();
                 String address = binding.address.getText().toString();
                 String phone = binding.phone.getText().toString();
                 String category = binding.category.getText().toString();
@@ -90,7 +60,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
                 if(name.equals("")){
                     Toast.makeText(SignUp.this, "name is mandatory", Toast.LENGTH_SHORT).show();
-                }else if(gender.equals("")){
+                }else if(checked.equals("")){
                     Toast.makeText(SignUp.this, "Please select the gender", Toast.LENGTH_SHORT).show();
                 }else if(status.equals("")){
                     Toast.makeText(SignUp.this, "Marrital Status is mandatory", Toast.LENGTH_SHORT).show();
@@ -98,12 +68,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     Toast.makeText(SignUp.this, "Father/Husband name is mandatory", Toast.LENGTH_SHORT).show();
                 }else if(blood.equals("")){
                     Toast.makeText(SignUp.this, "Blood Group is mandatory", Toast.LENGTH_SHORT).show();
-                }else if(binding.age.getText().toString().equals("")) {
+                }else if(age.equals("")){
                     Toast.makeText(SignUp.this, "age is mandatory", Toast.LENGTH_SHORT).show();
-                }else if (age >40){
-                    Toast.makeText(SignUp.this, " age between 5-40 is only acceptable ", Toast.LENGTH_SHORT).show();
-                }else if (age <5){
-                    Toast.makeText(SignUp.this, "Enter a Valid age(5-40) ", Toast.LENGTH_SHORT).show();
                 }else if(address.equals("")){
                     Toast.makeText(SignUp.this, "Address is mandatory", Toast.LENGTH_SHORT).show();
                 }else if(category.equals("")){
@@ -122,12 +88,11 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     if(password.equals(confirmPassword)) {
                         Boolean checkUserName = databaseHelper.checkName(name);
                         if(checkUserName == false) {
-                            Boolean insert = databaseHelper.insertData(name,gender,status,guard,blood, String.valueOf(age),address,category,date,password);
+                            Boolean insert = databaseHelper.insertData(name,gender,status,guard,blood,age,address,category,date,password);
                             if(insert == true){
                                 Toast.makeText(SignUp.this, "Signup Successfully!", Toast.LENGTH_SHORT).show();
 
-                                Intent intent = new Intent(getApplicationContext(), Profileview.class);
-                                intent.putExtra("name", name);
+                                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                                 startActivity(intent);
                             }else{
                                 Toast.makeText(SignUp.this, "Signup Failed!", Toast.LENGTH_SHORT).show();
@@ -164,6 +129,4 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
         dpd.show();
 
     }
-
-
 }
